@@ -189,17 +189,29 @@ def home():
   prediction_text = ''
   if request.method == 'POST':
     try:
-      # Extracting form inputs mapped to model feature names
-      education = request.form['Education']
+      # Capture raw inputs and use .strip() to clean stray whitespace/quotes
+      raw_education = request.form['Education'].strip()
       joining_year = int(request.form['JoiningYear'])
-      city = request.form['City']
+      raw_city = request.form['City'].strip()
       payment_tier = int(request.form['PaymentTier'])
       age = int(request.form['Age'])
-      gender = request.form['Gender']
-      ever_benched = request.form['EverBenched']
+      raw_gender = request.form['Gender'].strip()
+      raw_ever_benched = request.form['EverBenched'].strip()
       experience = int(request.form['ExperienceInCurrentDomain'])
 
-      # Create DataFrame matching original feature order[cite: 1]
+      # Mappings dictionary
+      education_map = {'Bachelors': 0, 'Masters': 1, 'PHD': 2}
+      city_map = {'Bangalore': 0, 'Pune': 1, 'New Delhi': 2}
+      gender_map = {'Female': 0, 'Male': 1}
+      benched_map = {'No': 0, 'Yes': 1}
+
+      # Safely convert to numeric, defaulting to 0 if an unmapped value occurs
+      education = education_map.get(raw_education, 0)
+      city = city_map.get(raw_city, 0)
+      gender = gender_map.get(raw_gender, 0)
+      ever_benched = benched_map.get(raw_ever_benched, 0)
+
+      # Create DataFrame matching model feature order
       input_data = pd.DataFrame([[
           education,
           joining_year,
